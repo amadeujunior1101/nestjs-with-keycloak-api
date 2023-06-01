@@ -12,7 +12,6 @@ export class User {
   }
 
   public nameNotEmpty() {
-    console.log('here name', this.name);
     if (this.name === '') throw new BadRequestException('name not empty');
   }
 }

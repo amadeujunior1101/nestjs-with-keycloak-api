@@ -1,0 +1,42 @@
+version: '3'
+
+volumes:
+  mysql_data:
+      driver: local
+
+services:
+  mysql:
+      image: mysql:5.7
+      volumes:
+        - mysql_data:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: keycloak
+        MYSQL_USER: keycloak
+        MYSQL_PASSWORD: password
+      # healtthcheck:
+      #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      #   interval: 10s
+      #   timeout: 10s
+      #   retries: 3
+
+  keycloak:
+      # image: quay.io/keycloak/keycloak:legacy
+      image: quay.io/keycloak/keycloak:21.1
+      command: start-dev
+      environment:
+        DB_VENDOR: MYSQL
+        DB_ADDR: mysql
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_PASSWORD: password
+        KEYCLOAK_ADMIN: admin
+        KEYCLOAK_ADMIN_PASSWORD: admin
+      ports:
+        - 8080:8080
+      depends_on:
+        - mysql
+        # mysql: 
+        #   condition: service_healthy
+      # extra_hosts: 
+      # - "host.docker.internal:172.17.0.1"

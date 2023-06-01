@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { IUserRepository } from 'src/Application/interfaces/user-repository.interface';
 import { CreateUserUsecase } from 'src/Application/usecases/create-user.usecase';
+import { GetUserByIdUsecase } from 'src/Application/usecases/get-user-by-id.usecase';
 import { ListAllUserUsecase } from 'src/Application/usecases/list-all-user.usecase';
 import { UserFactory } from 'src/Domain/user-factory';
+import { ApplicationConfigModule } from 'src/gateways/clients/config/application-config.module';
+import { UserGatewayModule } from 'src/gateways/clients/user/user.gateway.module';
 import { Repository } from 'typeorm';
 import { DatabaseModule } from './database.module';
 import { UserModel } from './entities/user.entity';
@@ -13,7 +16,12 @@ import { UserRepository } from './user-repository';
 import { UserController } from './user.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserModel]), DatabaseModule],
+  imports: [
+    ApplicationConfigModule,
+    TypeOrmModule.forFeature([UserModel]),
+    DatabaseModule,
+    UserGatewayModule,
+  ],
   controllers: [UserController],
   providers: [
     {
@@ -23,6 +31,10 @@ import { UserController } from './user.controller';
     {
       provide: 'ListAllUserUsecase',
       useExisting: ListAllUserUsecase,
+    },
+    {
+      provide: 'GetByIdUserUsecase',
+      useExisting: GetUserByIdUsecase,
     },
     {
       provide: UserModelFactory,
@@ -54,6 +66,22 @@ import { UserController } from './user.controller';
       },
       inject: [UserRepository],
     },
+    {
+      provide: GetUserByIdUsecase,
+      useFactory: (repository: IUserRepository) => {
+        return new GetUserByIdUsecase(repository);
+      },
+      inject: [UserRepository],
+    },
+    // {
+    //   provide: KeycloakAPI,
+    //   useFactory: (configService: ConfigService) => {
+    //     const url = configService.get('BASE_URL');
+    //     const realm = configService.get('REALM');
+    //     return new KeycloakAPI(url, realm);
+    //   },
+    //   inject: [ConfigService],
+    // },
   ],
 })
 export class AppModule {}
