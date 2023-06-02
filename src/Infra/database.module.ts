@@ -13,7 +13,7 @@ import { UserModel } from './entities/user.entity';
           database: 'database.sqlite',
           entities: [UserModel],
           synchronize: true,
-          dropSchema: true,
+          dropSchema: false,
         };
       },
     }),

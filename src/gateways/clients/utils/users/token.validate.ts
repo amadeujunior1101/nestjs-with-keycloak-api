@@ -1,4 +1,4 @@
-import { HttpException, Logger } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 import jwt_decode from 'jwt-decode';
 
 export default class RoleValidator {
@@ -12,12 +12,9 @@ export default class RoleValidator {
     return decoded.email;
   }
 
-  private static logger = new Logger(RoleValidator.name);
-
   private static baseExecRealm(token: string, roles: string[]) {
     const decoded: {
       email: string;
-      enterpriseId: string;
       userId: string;
       realm_access: {
         roles: string[];
@@ -55,7 +52,6 @@ export default class RoleValidator {
 
     const decoded: {
       email: string;
-      enterpriseId: string;
       userId: string;
       resource_access: typeof resourceAccess;
       name: string;

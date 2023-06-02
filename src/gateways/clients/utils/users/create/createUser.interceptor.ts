@@ -28,7 +28,7 @@ export class CreateUserInterceptor implements NestInterceptor {
           firstName,
           body.email,
           password,
-          'Group-dev',
+          'user-group',
           value.id,
         );
       }),

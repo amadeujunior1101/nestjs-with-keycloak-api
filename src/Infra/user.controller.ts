@@ -30,11 +30,11 @@ export class UserController {
 
   @Post()
   @Roles({
-    roles: ['nova-role'],
+    roles: ['admin'],
   })
   @UseInterceptors(CreateUserInterceptor)
   async create(@Body() createUserDto: CreateUserDto, @Request() req) {
-    RoleValidator.execResource(req.accessTokenJWT, ['nova-role']);
+    RoleValidator.execResource(req.accessTokenJWT, ['admin']);
 
     await this.keycloak.checkUser(createUserDto.email);
     return this.createUserUsecase.executeCreate(createUserDto);
@@ -42,7 +42,7 @@ export class UserController {
 
   @Get()
   @Roles({
-    roles: ['nova-role'],
+    roles: ['admin'],
   })
   async listAll(): Promise<UserModel[]> {
     return this.listUserUsecase.executeList();
@@ -50,9 +50,9 @@ export class UserController {
 
   @Get(':id')
   @Roles({
-    roles: ['nova-role'],
+    roles: ['user'],
   })
-  async getById(@Param('id') id: string): Promise<UserModel> {
-    return this.userByIdUserUsecase.executeGetById(id);
+  async getById(@Param('id') id: string, @Request() req): Promise<UserModel> {
+    return this.userByIdUserUsecase.executeGetById(id, req.accessTokenJWT);
   }
 }
